@@ -82,7 +82,7 @@ task cara()
 {
   while(true)
   {
-  OnFwd(MOTORS,100);
+  //OnFwd(MOTORS,100);
   
   until(Sensor(LIGHTS)<40);
   OnRev(MOTORS,100);
@@ -141,23 +141,14 @@ task disp()         /*vypis na display + pri stisku oranzoveho tl. preruseni smy
 task main()
 {
      _init();
-     //StartTask(disp);
-     //_start();				//tralala
-     //StartTask(search);
-     //StartTask(cmuchac);
+     StartTask(disp);
+     //_start();				//tralala2
+     StartTask(search);
+     StartTask(cmuchac);
+     StartTask(destroy);
      
-     //StartTask(cara);
-     while(true)
-  {
-  OnFwd(MOTORS,100);
-  
-  until(Sensor(LIGHTS)<40);
-  OnRev(MOTORS,100);
-  Wait(1000);
-  Off(MOTORS);
-  RotateMotorMy(100,R180,true);
-  Wait(1);
-  }
+     StartTask(cara);
+     
      
      //PlayTone(1000,100);
      //Wait(100);      
