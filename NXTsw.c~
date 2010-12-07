@@ -6,13 +6,13 @@
 #define SOUNDS S3
 #define USS    S4
 #define ARM OUT_B
-#define R180 570
+#define R180 2000
 #define LROT -100
 #define RROT 100
-#define NATACENI 360
+#define NATACENI 2500
 #define VZDALENOST 40
 
-bool hajzljetu = false;
+bool acquired = false;
 
 sub RotateMotorMy(int pwr,int degrees,bool brk=true)
 {
@@ -31,11 +31,10 @@ task destroy()
 {
   while(true)
   {
-    if(hajzljetu==true)
+    if(acquired==true)
     {
-      //Stop(search);
-
-OnFwd(MOTORS,100);
+      
+      OnFwd(MOTORS,100);
       
     }
   }
@@ -44,22 +43,24 @@ OnFwd(MOTORS,100);
 task search()
 {
   int smer = 1;
-   while(hajzljetu==false)
+   while(acquired==false)
    {
       
       
       if(smer==1)
       {
-	RotateMotorMy(100,NATACENI,true);
+	OnFwd(LMOTOR,100);
+	OnRev(RMOTOR,100);
 	smer=0;
-	Wait(1);
+	Wait(NATACENI);
 
       }
        if(smer==0)
        {
- 	RotateMotorMy(-100,NATACENI,true);
- 	smer=1;
-	Wait(1);
+ 	OnFwd(RMOTOR,100);
+	OnRev(LMOTOR,100);
+	smer=1;
+	Wait(NATACENI);
 
        }
       
@@ -67,14 +68,14 @@ task search()
   }
 
 
-task cmuchac()
+task cmuchac() 		//když najde nepritele nastavi acquired na true jinak na false
 {
   while(true)
   {
     if(SensorUS(USS)<VZDALENOST)
-      hajzljetu=true;
+      acquired=true;
     else
-      hajzljetu=false;
+      acquired=false;
   }
 }
 
@@ -115,11 +116,14 @@ sub _init()
 
 sub  _start()
 {
-  
+     OnFwd(MOTORS,100);
+     Wait(250);
      OnRev(MOTORS,100);
-     Wait(500);
-     Off(MOTORS); /*robot na vsech kolech*/
-     RotateMotorMy(MOTORS,-100,R180);
+     Wait(250);
+     OnFwd(LMOTOR,100);
+     OnRev(RMOTOR,100);
+     Wait(R180);
+     Off(MOTORS);
 }
 
 task disp()         /*vypis na display + pri stisku oranzoveho tl. preruseni smycky*/
@@ -142,11 +146,10 @@ task main()
 {
      _init();
      StartTask(disp);
-     //_start();				//tralala2
+     _start();				//tralala2
      StartTask(search);
      StartTask(cmuchac);
      StartTask(destroy);
-     
      StartTask(cara);
      
      
