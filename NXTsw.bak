@@ -10,7 +10,7 @@
 #define LROT -100
 #define RROT 100
 #define NATACENI 500
-#define VZDALENOST 20
+#define VZDALENOST 100
 
 int smer = 1;
 bool nalozeno=false;
@@ -163,9 +163,9 @@ sub _init()
 sub  _start()
 {
      OnFwd(MOTORS,100);
-     Wait(250);
+     Wait(200);
      OnRev(MOTORS,100);
-     Wait(250);
+     Wait(300);
      OnFwd(LMOTOR,100);
      OnRev(RMOTOR,100);
      Wait(R180);
@@ -182,8 +182,9 @@ task disp()         /*vypis na display + pri stisku oranzoveho tl. preruseni smy
        NumOut(50,LCD_LINE3,Sensor(TOUCHS));
        NumOut(50,LCD_LINE4,SensorUS(USS));
        NumOut(10,LCD_LINE5,smer);
-       NumOut(10,LCD_LINE6,probehlo);
-       NumOut(10,LCD_LINE7,probehlo2);
+       NumOut(50,LCD_LINE5,probehlo);
+       NumOut(90,LCD_LINE5,probehlo2);
+       TextOut(0,LCD_LINE6,"Orange to ABORT!!");
        Wait(100);
     }
     StopAllTasks();
