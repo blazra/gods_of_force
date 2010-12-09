@@ -10,11 +10,9 @@
 #define LROT -100
 #define RROT 100
 #define NATACENI 500
-#define VZDALENOST 100
+#define VZDALENOST 20
 
-bool acquired = false;
 int smer = 1;
-bool kraj = false;
 bool nalozeno=false;
 bool probehlo=false;
 bool probehlo2=false;
@@ -44,21 +42,20 @@ task hever() //nadzvednuti soupere
     Off(ARM);
     while(true)
     {
-    until(SensorUS(USS)<11);
-    nalozeno=false;
-    int zvedni=300;
-    ResetTachoCount(ARM);
-    if(Sensor(TOUCHS)==1)
-    {
+       until(SensorUS(USS)<11);  //cekani nez se protivni priblizi na mene nez 11cm
+       int zvedni=300;
+       ResetTachoCount(ARM);
+       if(Sensor(TOUCHS)==1)     //pokud je narazni stlacen hned zvedame
+       {
          PlayTone(500,100);
          OnFwd(ARM,100);
          Wait(zvedni);
          Off(ARM);
          nalozeno=true;
 
-    }
-    else
-    {
+       }
+       else                     //jinak...
+       {
          OnFwd(ARM,30);
          Wait(500);
          Off(ARM);
@@ -69,15 +66,15 @@ task hever() //nadzvednuti soupere
              Wait(zvedni);
              Off(ARM);
          }
-         else
+         else                       //navraceni zvedaku dolu
          {
              OnRev(ARM,50);
              Wait(100);
              Off(ARM);
              Float(ARM);
-         }
-    }
-    }
+         }//konec podminky mereni sily
+       }//konec podminky narazniku
+    } //konec cyklu
 }
 
 
@@ -87,37 +84,32 @@ task search()
   Wait(100);
 
 
-      for(int i;i<2&&probehlo==false;i++)
+      for(int i;i<5&&probehlo==false;i++)
       {
 
       while(smer==1)
       {
-	OnFwd(LMOTOR,100);
-	OnRev(RMOTOR,100);
-	Wait(5);
-	if(slum==NATACENI)
-	  smer=0;
-	slum++;
-
-
+          OnFwd(LMOTOR,100);
+          OnRev(RMOTOR,100);
+          Wait(5);
+          if(slum==NATACENI)
+             smer=0;
+          slum++;
       }
        while(smer==0)
        {
- 	OnFwd(RMOTOR,100);
-	OnRev(LMOTOR,100);
-	Wait(5);
-	if(slum==2*NATACENI)
-	{
-	  smer=1;
-	  slum=0;
-	}
-	slum++;
-
-
+           OnFwd(RMOTOR,100);
+           OnRev(LMOTOR,100);
+           Wait(5);
+           if(slum==2*NATACENI)
+           {
+              smer=1;
+              slum=0;
+           }
+           slum++;
        }
-
        slum=0;
-      }
+      } //konec foru
 }
 
 
@@ -128,16 +120,18 @@ task cara()
   {
   //OnFwd(MOTORS,100);
 
-  until(Sensor(LIGHTS)<40);
-  smer=88;
-  probehlo=true;
-  RotateMotorEx(MOTORS,-100,500,0,false,true);
-  if(nalozeno!=true)
-  RotateMotorMy(100,R180-500,true);
-  Wait(1);
-  smer=1;
-  if(nalozeno)
-  {
+     until(Sensor(LIGHTS)<40);
+     smer=88;
+     probehlo=true;
+     RotateMotorEx(MOTORS,-100,500,0,false,true);
+     if(nalozeno!=true)
+
+        RotateMotorMy(100,R180-500,true);
+     Wait(1);
+     smer=1;
+
+   if(nalozeno)
+   {
      PlayTone(3000,900);
      OnRev(ARM,70);
      Wait(800);
@@ -145,9 +139,9 @@ task cara()
      Wait(100);
      Off(ARM);
      nalozeno=false;
-  }
-  probehlo2=false;
-  //StartTask(search);
+   }
+   probehlo2=false;
+                        //StartTask(search);
   }
 
 }
@@ -158,7 +152,7 @@ sub _init()
      SetSensorMode(LIGHTS, SENSOR_MODE_PERCENT);
      SetSensorType(TOUCHS, SENSOR_TYPE_TOUCH);
      SetSensorMode(TOUCHS, SENSOR_MODE_BOOL);
-     SetSensorType(USS, SENSOR_TYPE_LOWSPEED);
+     SetSensorType(USS,    SENSOR_TYPE_LOWSPEED);
      for(int i=0;i<4;i++)
      {
           PlayTone(10000,100);
@@ -184,44 +178,43 @@ task disp()         /*vypis na display + pri stisku oranzoveho tl. preruseni smy
 {
     while (!ButtonPressed(BTNCENTER,false))
     {
-    ClearScreen();
-    NumOut(50,LCD_LINE1,BatteryLevel());
-    NumOut(50,LCD_LINE2,Sensor(LIGHTS));
-    NumOut(50,LCD_LINE3,Sensor(TOUCHS));
-    NumOut(50,LCD_LINE4,SensorUS(USS));
-    TextOut(10,LCD_LINE5,"Press CENTER");
-    TextOut(20,LCD_LINE6,"To ABORT!!");
-    Wait(100);
+       ClearScreen();
+       NumOut(50,LCD_LINE1,BatteryLevel());
+       NumOut(50,LCD_LINE2,Sensor(LIGHTS));
+       NumOut(50,LCD_LINE3,Sensor(TOUCHS));
+       NumOut(50,LCD_LINE4,SensorUS(USS));
+       NumOut(10,LCD_LINE5,smer);
+       NumOut(10,LCD_LINE6,probehlo);
+       NumOut(10,LCD_LINE7,probehlo2);
+       Wait(100);
     }
     StopAllTasks();
 }
 
 task main()
 {
-     _init();
-     StartTask(disp);
-     _start();
+     _init();                   //init senzoru a 5s cekani
+     StartTask(disp);           //debug vlakno
+     _start();                  //nahozeni na kola
+     StartTask(cara);           //ochane vlakno branici vyjeti z kruhu
      StartTask(search);
      StartTask(hever);
-     StartTask(cara);
       while(true)
       {
-      Wait(100);
-      until(SensorUS(USS)<VZDALENOST)
-      {
-       if(probehlo==true&&probehlo2==false&&smer!=88)
-       {
-       OnFwd(RMOTOR,100);
-       OnRev(LMOTOR,100);
-       probehlo2=true;
-       }
-      }
-      StopTask(search);
-      if(smer!=88)
-         OnFwd(MOTORS,100);
+         Wait(100);
+         until(SensorUS(USS)<VZDALENOST)
+         {
+            if(probehlo==true&&probehlo2==false&&smer!=88)
+            {
+                OnFwd(RMOTOR,100);
+                OnRev(LMOTOR,100);
+                probehlo2=true;
+            }
+         }
+         StopTask(search);
+         if(smer!=88)
+            OnFwd(MOTORS,100);
 
       }
-     //PlayTone(1000,100);
-     //Wait(100);
 
 }
