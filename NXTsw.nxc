@@ -73,9 +73,9 @@ task hever() //nadzvednuti soupere
              Wait(100);
              Off(ARM);
              Float(ARM);
-         }
-       }
-    }
+         }//konec podminky mereni sily
+       }//konec podminky narazniku
+    } //konec cyklu
 }
 
 
@@ -109,7 +109,6 @@ task search()
            }
            slum++;
        }
-
        slum=0;
       } //konec foru
 }
@@ -130,8 +129,8 @@ task cara()
         RotateMotorMy(100,R180-500,true);
      Wait(1);
      smer=1;
-  if(nalozeno)
-  {
+   if(nalozeno)
+   {
      PlayTone(3000,900);
      OnRev(ARM,70);
      Wait(800);
@@ -139,9 +138,9 @@ task cara()
      Wait(100);
      Off(ARM);
      nalozeno=false;
-  }
-  probehlo2=false;
-  //StartTask(search);
+   }
+   probehlo2=false;
+                        //StartTask(search);
   }
 
 }
@@ -192,12 +191,12 @@ task disp()         /*vypis na display + pri stisku oranzoveho tl. preruseni smy
 
 task main()
 {
-     _init();
-     StartTask(disp);
-     _start();
+     _init();                   //init senzoru a 5s cekani
+     StartTask(disp);           //debug vlakno
+     _start();                  //nahozeni na kola
+     StartTask(cara);           //ochane vlakno branici vyjeti z kruhu
      StartTask(search);
      //StartTask(hever);
-     StartTask(cara);
       while(true)
       {
          Wait(100);
