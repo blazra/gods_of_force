@@ -42,21 +42,21 @@ task hever() //nadzvednuti soupere
     Off(ARM);
     while(true)
     {
-    until(SensorUS(USS)<11);
-    nalozeno=false;
-    int zvedni=300;
-    ResetTachoCount(ARM);
-    if(Sensor(TOUCHS)==1)
-    {
+       until(SensorUS(USS)<11);  //cekani nez se protivni priblizi na mene nez 11cm
+       nalozeno=false;
+       int zvedni=300;
+       ResetTachoCount(ARM);
+       if(Sensor(TOUCHS)==1)     //pokud je narazni stlacen hned zvedame
+       {
          PlayTone(500,100);
          OnFwd(ARM,100);
          Wait(zvedni);
          Off(ARM);
          nalozeno=true;
 
-    }
-    else
-    {
+       }
+       else                     //jinak...
+       {
          OnFwd(ARM,30);
          Wait(500);
          Off(ARM);
@@ -67,14 +67,14 @@ task hever() //nadzvednuti soupere
              Wait(zvedni);
              Off(ARM);
          }
-         else
+         else                       //navraceni zvedaku dolu
          {
              OnRev(ARM,50);
              Wait(100);
              Off(ARM);
              Float(ARM);
          }
-    }
+       }
     }
 }
 
@@ -90,32 +90,28 @@ task search()
 
       while(smer==1)
       {
-	OnFwd(LMOTOR,100);
-	OnRev(RMOTOR,100);
-	Wait(5);
-	if(slum==NATACENI)
-	  smer=0;
-	slum++;
-
-
+          OnFwd(LMOTOR,100);
+          OnRev(RMOTOR,100);
+          Wait(5);
+          if(slum==NATACENI)
+             smer=0;
+          slum++;
       }
        while(smer==0)
        {
- 	OnFwd(RMOTOR,100);
-	OnRev(LMOTOR,100);
-	Wait(5);
-	if(slum==2*NATACENI)
-	{
-	  smer=1;
-	  slum=0;
-	}
-	slum++;
-
-
+           OnFwd(RMOTOR,100);
+           OnRev(LMOTOR,100);
+           Wait(5);
+           if(slum==2*NATACENI)
+           {
+              smer=1;
+              slum=0;
+           }
+           slum++;
        }
 
        slum=0;
-      }
+      } //konec foru
 }
 
 
@@ -126,14 +122,14 @@ task cara()
   {
   //OnFwd(MOTORS,100);
 
-  until(Sensor(LIGHTS)<40);
-  smer=88;
-  probehlo=true;
-  RotateMotorEx(MOTORS,-100,500,0,false,true);
-  if(nalozeno!=true)
-  RotateMotorMy(100,R180-500,true);
-  Wait(1);
-  smer=1;
+     until(Sensor(LIGHTS)<40);
+     smer=88;
+     probehlo=true;
+     RotateMotorEx(MOTORS,-100,500,0,false,true);
+     if(nalozeno!=true)
+        RotateMotorMy(100,R180-500,true);
+     Wait(1);
+     smer=1;
   if(nalozeno)
   {
      PlayTone(3000,900);
@@ -182,14 +178,14 @@ task disp()         /*vypis na display + pri stisku oranzoveho tl. preruseni smy
 {
     while (!ButtonPressed(BTNCENTER,false))
     {
-    ClearScreen();
-    NumOut(50,LCD_LINE1,BatteryLevel());
-    NumOut(50,LCD_LINE2,Sensor(LIGHTS));
-    NumOut(50,LCD_LINE3,Sensor(TOUCHS));
-    NumOut(50,LCD_LINE4,SensorUS(USS));
-    TextOut(10,LCD_LINE5,"Press CENTER");
-    TextOut(20,LCD_LINE6,"To ABORT!!");
-    Wait(100);
+       ClearScreen();
+       NumOut(50,LCD_LINE1,BatteryLevel());
+       NumOut(50,LCD_LINE2,Sensor(LIGHTS));
+       NumOut(50,LCD_LINE3,Sensor(TOUCHS));
+       NumOut(50,LCD_LINE4,SensorUS(USS));
+       TextOut(10,LCD_LINE5,"Press CENTER");
+       TextOut(20,LCD_LINE6,"To ABORT!!");
+       Wait(100);
     }
     StopAllTasks();
 }
@@ -204,22 +200,20 @@ task main()
      StartTask(cara);
       while(true)
       {
-      Wait(100);
-      until(SensorUS(USS)<VZDALENOST)
-      {
-       if(probehlo==true&&probehlo2==false&&smer!=88)
-       {
-       OnFwd(RMOTOR,100);
-       OnRev(LMOTOR,100)
-       probehlo2=true;
-       }
-      }
-      StopTask(search);
-      if(smer!=88)
-         OnFwd(MOTORS,100);
+         Wait(100);
+         until(SensorUS(USS)<VZDALENOST)
+         {
+            if(probehlo==true&&probehlo2==false&&smer!=88)
+            {
+                OnFwd(RMOTOR,100);
+                OnRev(LMOTOR,100)
+                probehlo2=true;
+            }
+         }
+         StopTask(search);
+         if(smer!=88)
+            OnFwd(MOTORS,100);
 
       }
-     //PlayTone(1000,100);
-     //Wait(100);
 
 }
