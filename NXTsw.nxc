@@ -7,8 +7,6 @@
 #define USS    S4
 #define ARM OUT_B
 #define R180 1000
-#define LROT -100
-#define RROT 100
 #define NATACENI 500
 #define VZDALENOST 100
 

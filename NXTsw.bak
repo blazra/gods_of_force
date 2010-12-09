@@ -145,21 +145,21 @@ task cara()
 }
 
 sub _init()
-{
+{                     //vypis textu v teto fci je jen informativni
      ClearScreen();
-     TextOut(10,LCD_LINE2,"INIT started!!");
+     //TextOut(10,LCD_LINE2,"INIT started!!");
      SetSensorType(LIGHTS, SENSOR_TYPE_LIGHT_ACTIVE);
      SetSensorMode(LIGHTS, SENSOR_MODE_PERCENT);
-     TextOut(10,LCD_LINE3,"LIGHT S. OK");
+     //TextOut(10,LCD_LINE3,"LIGHT S. OK");
      SetSensorType(TOUCHS, SENSOR_TYPE_TOUCH);
      SetSensorMode(TOUCHS, SENSOR_MODE_BOOL);
-     TextOut(10,LCD_LINE4,"TOUCH S. OK");
+     //TextOut(10,LCD_LINE4,"TOUCH S. OK");
      SetSensorType(USS,    SENSOR_TYPE_LOWSPEED);
-     TextOut(10,LCD_LINE5,"US S. OK");
+     //TextOut(10,LCD_LINE5,"US S. OK");
 
      for(int i=0;i<4;i++)
      {
-          TextOut(30+10*i,LCD_LINE6,"X");
+          //TextOut(30+10*i,LCD_LINE6,"X");    //ukazuje prubeh cekani
           PlayTone(10000,100);
           Wait(990);
      }
