@@ -84,7 +84,7 @@ task search()
   Wait(100);
 
 
-      for(int i;i<5&&probehlo==false;i++)
+      for(int i;i<3&&probehlo==false;i++)
       {
 
       while(smer==1)
@@ -146,16 +146,24 @@ task cara()
 
 sub _init()
 {
+     ClearScreen();
+     TextOut(10,LCD_LINE2,"INIT started!!");
      SetSensorType(LIGHTS, SENSOR_TYPE_LIGHT_ACTIVE);
      SetSensorMode(LIGHTS, SENSOR_MODE_PERCENT);
+     TextOut(10,LCD_LINE3,"LIGHT S. OK");
      SetSensorType(TOUCHS, SENSOR_TYPE_TOUCH);
      SetSensorMode(TOUCHS, SENSOR_MODE_BOOL);
+     TextOut(10,LCD_LINE4,"TOUCH S. OK");
      SetSensorType(USS,    SENSOR_TYPE_LOWSPEED);
+     TextOut(10,LCD_LINE5,"US S. OK");
+
      for(int i=0;i<4;i++)
      {
+          TextOut(30+10*i,LCD_LINE6,"X");
           PlayTone(10000,100);
           Wait(990);
      }
+     ClearScreen();
      PlayTone(2000,100);
      Wait(100);
 }
@@ -203,7 +211,7 @@ task main()
          Wait(100);
          until(SensorUS(USS)<VZDALENOST)
          {
-            if(probehlo==true&&probehlo2==false&&smer!=88)
+            if(probehlo&&!probehlo2&&smer!=88)
             {
                 OnFwd(RMOTOR,100);
                 OnRev(LMOTOR,100);
