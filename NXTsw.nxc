@@ -144,7 +144,7 @@ task cara()
 
 sub _init()
 {                     //vypis textu v teto fci je jen informativni
-     ClearScreen();
+     //ClearScreen();
      //TextOut(10,LCD_LINE2,"INIT started!!");
      SetSensorType(LIGHTS, SENSOR_TYPE_LIGHT_ACTIVE);
      SetSensorMode(LIGHTS, SENSOR_MODE_PERCENT);
@@ -161,7 +161,7 @@ sub _init()
           PlayTone(10000,100);
           Wait(990);
      }
-     ClearScreen();
+     //ClearScreen();
      PlayTone(2000,100);
      Wait(100);
 }
