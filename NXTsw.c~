@@ -6,13 +6,16 @@
 #define SOUNDS S3
 #define USS    S4
 #define ARM OUT_B
-#define R180 2000
+#define R180 100
 #define LROT -100
 #define RROT 100
 #define NATACENI 2500
 #define VZDALENOST 40
 
 bool acquired = false;
+int smer = 1;
+bool kraj = false;
+
 
 sub RotateMotorMy(int pwr,int degrees,bool brk=true)
 {
@@ -27,70 +30,74 @@ sub RotateMotorMy(int pwr,int degrees,bool brk=true)
     Wait(1);
 }
 
-task destroy()
-{
-  while(true)
-  {
-    if(acquired==true)
-    {
-      
-      OnFwd(MOTORS,100);
-      
-    }
-  }
-}
+
 
 task search()
 {
-  int smer = 1;
-   while(acquired==false)
-   {
+  Wait(100);
+  int slum = 0;
+   
+      while(true)
+      {
       
-      
-      if(smer==1)
+      while(smer==1)
       {
 	OnFwd(LMOTOR,100);
 	OnRev(RMOTOR,100);
-	smer=0;
-	Wait(NATACENI);
-
+	Wait(5);
+	if(slum==100)
+	  smer=0;
+	slum++;
+	
+	
       }
-       if(smer==0)
+       while(smer==0)
        {
  	OnFwd(RMOTOR,100);
 	OnRev(LMOTOR,100);
-	smer=1;
-	Wait(NATACENI);
-
+	Wait(5);
+	if(slum==200)
+	{
+	  smer=1;
+	  slum=0;
+	}
+	slum++;
+	
+	
        }
-      
-    }
-  }
-
-
-task cmuchac() 		//když najde nepritele nastavi acquired na true jinak na false
-{
-  while(true)
-  {
-    if(SensorUS(USS)<VZDALENOST)
-      acquired=true;
-    else
-      acquired=false;
-  }
+        
+       slum=0;
+      }
 }
+  
+
+
+// task cmuchac() 		//když najde nepritele nastavi acquired na true jinak na false
+// {
+//   while(true)
+//   {
+//     if(SensorUS(USS)<VZDALENOST)
+//       acquired=true;
+//     else
+//       acquired=false;
+//   }
+// }
 
 task cara()
 {
+  Wait(100);
   while(true)
   {
   //OnFwd(MOTORS,100);
   
   until(Sensor(LIGHTS)<40);
+  smer=88;
   OnRev(MOTORS,100);
   Wait(1000);
   Off(MOTORS);
   RotateMotorMy(100,R180,true);
   Wait(1);
+  smer=0;
   }
   
 }
@@ -146,13 +153,20 @@ task main()
 {
      _init();
      StartTask(disp);
-     _start();				//tralala2
+     //_start();				//tralala2
      StartTask(search);
-     StartTask(cmuchac);
-     StartTask(destroy);
+     
+     
      StartTask(cara);
      
-     
+      while(true)
+      {
+	Wait(100);
+      until(SensorUS(USS)<VZDALENOST)
+      ;
+      StopTask(search);
+      OnFwd(MOTORS,100);
+      }
      //PlayTone(1000,100);
      //Wait(100);      
 	 
