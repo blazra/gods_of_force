@@ -10,11 +10,9 @@
 #define LROT -100
 #define RROT 100
 #define NATACENI 500
-#define VZDALENOST 100
+#define VZDALENOST 20
 
-bool acquired = false;
 int smer = 1;
-bool kraj = false;
 bool nalozeno=false;
 bool probehlo=false;
 bool probehlo2=false;
@@ -87,7 +85,7 @@ task search()
   Wait(100);
 
 
-      for(int i;i<2&&probehlo==false;i++)
+      for(int i;i<5&&probehlo==false;i++)
       {
 
       while(smer==1)
@@ -202,7 +200,7 @@ task main()
      StartTask(disp);
      _start();
      StartTask(search);
-     StartTask(hever);
+     //StartTask(hever);
      StartTask(cara);
       while(true)
       {
@@ -212,7 +210,7 @@ task main()
        if(probehlo==true&&probehlo2==false&&smer!=88)
        {
        OnFwd(RMOTOR,100);
-       OnRev(LMOTOR,100);
+       OnRev(LMOTOR,100)
        probehlo2=true;
        }
       }
