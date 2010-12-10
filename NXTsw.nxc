@@ -7,10 +7,8 @@
 #define USS    S4
 #define ARM OUT_B
 #define R180 1000
-#define LROT -100
-#define RROT 100
 #define NATACENI 500
-#define VZDALENOST 20
+#define VZDALENOST 100
 
 int smer = 1;
 bool nalozeno=false;
@@ -84,7 +82,7 @@ task search()
   Wait(100);
 
 
-      for(int i;i<5&&probehlo==false;i++)
+      for(int i;i<3&&probehlo==false;i++)
       {
 
       while(smer==1)
@@ -145,17 +143,25 @@ task cara()
 }
 
 sub _init()
-{
+{                     //vypis textu v teto fci je jen informativni
+     //ClearScreen();
+     //TextOut(10,LCD_LINE2,"INIT started!!");
      SetSensorType(LIGHTS, SENSOR_TYPE_LIGHT_ACTIVE);
      SetSensorMode(LIGHTS, SENSOR_MODE_PERCENT);
+     //TextOut(10,LCD_LINE3,"LIGHT S. OK");
      SetSensorType(TOUCHS, SENSOR_TYPE_TOUCH);
      SetSensorMode(TOUCHS, SENSOR_MODE_BOOL);
+     //TextOut(10,LCD_LINE4,"TOUCH S. OK");
      SetSensorType(USS,    SENSOR_TYPE_LOWSPEED);
+     //TextOut(10,LCD_LINE5,"US S. OK");
+
      for(int i=0;i<4;i++)
      {
+          //TextOut(30+10*i,LCD_LINE6,"X");    //ukazuje prubeh cekani
           PlayTone(10000,100);
           Wait(990);
      }
+     //ClearScreen();
      PlayTone(2000,100);
      Wait(100);
 }
@@ -163,9 +169,9 @@ sub _init()
 sub  _start()
 {
      OnFwd(MOTORS,100);
-     Wait(250);
+     Wait(200);
      OnRev(MOTORS,100);
-     Wait(250);
+     Wait(300);
      OnFwd(LMOTOR,100);
      OnRev(RMOTOR,100);
      Wait(R180);
@@ -182,8 +188,9 @@ task disp()         /*vypis na display + pri stisku oranzoveho tl. preruseni smy
        NumOut(50,LCD_LINE3,Sensor(TOUCHS));
        NumOut(50,LCD_LINE4,SensorUS(USS));
        NumOut(10,LCD_LINE5,smer);
-       NumOut(10,LCD_LINE6,probehlo);
-       NumOut(10,LCD_LINE7,probehlo2);
+       NumOut(50,LCD_LINE5,probehlo);
+       NumOut(90,LCD_LINE5,probehlo2);
+       TextOut(0,LCD_LINE6,"Orange to ABORT!!");
        Wait(100);
     }
     StopAllTasks();
@@ -192,7 +199,7 @@ task disp()         /*vypis na display + pri stisku oranzoveho tl. preruseni smy
 task main()
 {
      _init();                   //init senzoru a 5s cekani
-     StartTask(disp);           //debug vlakno
+     //StartTask(disp);           //debug vlakno
      _start();                  //nahozeni na kola
      StartTask(cara);           //ochane vlakno branici vyjeti z kruhu
      StartTask(search);
@@ -202,7 +209,7 @@ task main()
          Wait(100);
          until(SensorUS(USS)<VZDALENOST)
          {
-            if(probehlo==true&&probehlo2==false&&smer!=88)
+            if(probehlo&&!probehlo2&&smer!=88)
             {
                 OnFwd(RMOTOR,100);
                 OnRev(LMOTOR,100);

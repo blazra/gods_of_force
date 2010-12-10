@@ -5,7 +5,7 @@ FW		= 128
 # Override is only needed by avr-lib build system.
 
 all: clean
-	#cp $(PRG).c $(PRG).nxc
+	cp $(PRG).c $(PRG).nxc
 	nbc -EF -v=$(FW) $(PRG).nxc -O=$(PRG).rxe
 	@mv $(PRG).rxe `echo -n $${PWD##*/}|tr " " "-" && echo ".rxe"`
 clean:
